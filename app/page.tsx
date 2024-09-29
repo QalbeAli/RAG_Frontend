@@ -2,6 +2,8 @@ import Head from 'next/head';
 import Chatbot from './components/chatbotBox';
 import Contact from './components/contact';
 import Services from './components/services'
+import Backtest from './components/Backtest';
+import ChatComponent from './components/ChatComponent';
 
 export const metadata = {
   title: 'DeltaDev-hospital',
@@ -28,6 +30,8 @@ export default function Home() {
           <h1 className="text-4xl md:text-7xl font-bold text-blue-800">
             Empower Your Studies with <br /> AI Chatbot
           </h1>
+          <Backtest />
+          <ChatComponent />
 
           <p className="text-base md:text-lg text-blue-500 mt-4">
             Get instant answers and personalized study recommendations with our AI-powered research and study chatbot.

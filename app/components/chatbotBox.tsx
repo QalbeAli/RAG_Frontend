@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'; // For animation
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark, faPaperPlane } from '@fortawesome/free-solid-svg-icons';
 import { faCommentDots } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,15 +13,38 @@ export default function Chatbot() {
     { id: 2, text: "What brings you here today? Please use the navigation below or ask me anything about the hospital services. 👇", sender: "bot" }
   ]);
   const [userMessage, setUserMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const toggleChatbot = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (userMessage.trim() !== "") {
-      setMessages([...messages, { id: Date.now(), text: userMessage, sender: "user" }]);
+      const newMessages = [...messages, { id: Date.now(), text: userMessage, sender: "user" }];
+      setMessages(newMessages);
       setUserMessage(""); // Clear input after sending
+      setLoading(true);
+      setError("");
+
+      try {
+        // Make the POST request to the FastAPI backend
+        const response = await axios.post('http://127.0.0.1:8000/chat', {
+          question: userMessage,
+        });
+
+        // Add the bot's answer to the message list
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { id: Date.now(), text: response.data.answer, sender: "bot" },
+        ]);
+      } catch (err) {
+        console.error("Error:", err);
+        setError("Something went wrong. Please try again.");
+      } finally {
+        setLoading(false);
+      }
     }
   };
 
@@ -84,7 +108,7 @@ export default function Chatbot() {
             value={userMessage}
             onChange={(e) => setUserMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="flex-grow p-2 border border-gray-300 rounded-lg"
+            className="flex-grow p-2 border border-gray-300 text-black rounded-lg"
           />
           {/* Send button appears when user starts typing */}
           {userMessage && (
@@ -101,4 +125,4 @@ export default function Chatbot() {
       </motion.div>
     </div>
   );
-}  
+}

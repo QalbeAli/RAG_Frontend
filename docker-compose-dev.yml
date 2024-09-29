@@ -1,0 +1,14 @@
+version: '3'
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev  # Use Dockerfile.dev for development
+    volumes:
+      - .:/app  # Mount the code into the container
+      - /app/node_modules
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=development
+    command: yarn dev  # Run Next.js in dev mode
